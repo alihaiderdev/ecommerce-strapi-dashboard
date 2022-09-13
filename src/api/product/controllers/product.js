@@ -19,13 +19,12 @@ const calculateAverageRating = (reviews, fixed = 1) => {
 module.exports = createCoreController("api::product.product", ({ strapi }) => ({
   async find(ctx) {
     const { data, meta } = await super.find(ctx);
-
     let products = data?.map((product) => {
       const { id, attributes } = product;
-      const reviews = product?.attributes?.reviews?.data;
+      const reviews = attributes?.reviews?.data;
       if (reviews?.length > 0) {
         return {
-          id,
+          id: id,
           attributes: {
             ...attributes,
             averageRating: calculateAverageRating(reviews),
@@ -35,7 +34,6 @@ module.exports = createCoreController("api::product.product", ({ strapi }) => ({
         return { id, attributes: { ...attributes, averageRating: 0 } };
       }
     });
-
     return { data: products, meta };
   },
 
