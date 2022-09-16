@@ -45,6 +45,12 @@
       "type": "integer",
       "required": true,
       "default": 0
+    },
+    "brands": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::brand.brand",
+      "mappedBy": "category"
     }
   }
 }

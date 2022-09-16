@@ -17,6 +17,13 @@ const calculateAverageRating = (reviews, fixed = 1) => {
 };
 
 module.exports = createCoreController("api::product.product", ({ strapi }) => ({
+  async create(ctx) {
+    console.log(ctx.request.body);
+    const response = await super.create(ctx);
+
+    return response;
+  },
+
   async find(ctx) {
     const { data, meta } = await super.find(ctx);
     let products = data?.map((product) => {

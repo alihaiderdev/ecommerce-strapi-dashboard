@@ -29,7 +29,7 @@
     "image": {
       "type": "media",
       "multiple": false,
-      "required": true,
+      "required": false,
       "allowedTypes": [
         "images"
       ]
@@ -59,7 +59,7 @@
     "averageRating": {
       "type": "decimal",
       "default": 0,
-      "required": true
+      "required": false
     }
   }
 }
