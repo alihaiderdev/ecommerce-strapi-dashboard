@@ -81,16 +81,21 @@
       "target": "api::category.category",
       "mappedBy": "user"
     },
-    "address": {
-      "type": "component",
-      "repeatable": true,
-      "component": "address.address"
-    },
     "brands": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::brand.brand",
       "mappedBy": "user"
+    },
+    "billingAddress": {
+      "type": "component",
+      "repeatable": false,
+      "component": "address.address"
+    },
+    "shippingAddress": {
+      "type": "component",
+      "repeatable": true,
+      "component": "address.address"
     }
   }
 }
