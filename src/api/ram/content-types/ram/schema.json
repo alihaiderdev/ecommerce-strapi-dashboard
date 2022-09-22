@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "rams",
+  "info": {
+    "singularName": "ram",
+    "pluralName": "rams",
+    "displayName": "Ram",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "value": {
+      "type": "string"
+    },
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product",
+      "mappedBy": "ram"
+    }
+  }
+}

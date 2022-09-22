@@ -60,6 +60,18 @@
       "type": "decimal",
       "default": 0,
       "required": false
+    },
+    "color": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::color.color",
+      "inversedBy": "products"
+    },
+    "ram": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::ram.ram",
+      "inversedBy": "products"
     }
   }
 }
