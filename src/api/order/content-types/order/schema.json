@@ -4,55 +4,38 @@
   "info": {
     "singularName": "order",
     "pluralName": "orders",
-    "displayName": "Order"
+    "displayName": "Order",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
-    "email": {
-      "type": "email",
-      "required": true
-    },
-    "orderId": {
-      "type": "uid",
-      "required": true
-    },
-    "paymentInfo": {
-      "type": "json"
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "orders"
     },
     "products": {
-      "type": "json",
-      "required": true
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "inversedBy": "orders"
     },
-    "address": {
-      "type": "text",
-      "required": true
-    },
-    "name": {
-      "type": "string",
-      "required": true
-    },
-    "transactionId": {
-      "type": "string"
-    },
-    "amount": {
-      "type": "integer",
-      "required": true
+    "total": {
+      "type": "decimal"
     },
     "status": {
       "type": "enumeration",
       "enum": [
-        "pending",
-        "complete",
-        "shipped",
-        "cancelled",
-        "declined",
-        "refunded"
-      ],
-      "default": "pending",
-      "required": true
+        "paid",
+        "unpaid"
+      ]
+    },
+    "checkoutSession": {
+      "type": "string"
     }
   }
 }

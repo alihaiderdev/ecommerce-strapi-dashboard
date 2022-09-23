@@ -96,6 +96,12 @@
       "type": "component",
       "repeatable": true,
       "component": "address.address"
+    },
+    "orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order.order",
+      "mappedBy": "user"
     }
   }
 }
