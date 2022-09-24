@@ -45,16 +45,26 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
   async create(ctx) {
     // const response = await super.create(ctx);
     console.log(ctx.request);
-    const { product } = ctx.request.body;
-    if (!product) {
+    const { products } = ctx.request.body;
+    if (!products) {
       return ctx.throw(400, "Please specify products");
     }
 
     // const entry = await strapi.entityService.findOne(
-    //   "api::article.article",
+    //   "api::product.product",
     //   product.id,
     //   {
     //     fields: ["title", "description"],
+    //     populate: { category: true },
+    //   }
+    // );
+
+    // const entries = await strapi.entityService.findMany(
+    //   "api::article.article",
+    //   {
+    //     fields: ["title", "description"],
+    //     filters: { title: "Hello World" },
+    //     sort: { createdAt: "DESC" },
     //     populate: { category: true },
     //   }
     // );

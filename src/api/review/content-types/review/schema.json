@@ -14,13 +14,14 @@
   "attributes": {
     "content": {
       "type": "text",
-      "default": "NA",
       "required": true
     },
     "rating": {
       "type": "decimal",
       "default": 0,
-      "required": true
+      "required": true,
+      "max": 5,
+      "min": 0
     },
     "user": {
       "type": "relation",
