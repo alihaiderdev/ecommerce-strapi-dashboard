@@ -25,7 +25,8 @@
       "inversedBy": "orders"
     },
     "total": {
-      "type": "decimal"
+      "type": "decimal",
+      "required": true
     },
     "status": {
       "type": "enumeration",
@@ -36,6 +37,10 @@
     },
     "checkoutSession": {
       "type": "string"
+    },
+    "quantityWithProductIds": {
+      "type": "json",
+      "required": true
     }
   }
 }

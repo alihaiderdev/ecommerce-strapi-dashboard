@@ -7,66 +7,135 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const { createCoreController } = require("@strapi/strapi").factories;
 
-module.exports = createCoreController("api::order.order", ({ strapi }) => ({
-  //   // Method 1: Creating an entirely custom action
-  //   async exampleAction(ctx) {
-  //     try {
-  //       ctx.body = "ok";
-  //     } catch (err) {
-  //       ctx.body = err;
-  //     }
-  //   },
-  //   // Method 2: Wrapping a core action (leaves core logic in place)
-  //   async find(ctx) {
-  //     // some custom logic here
-  //     ctx.query = { ...ctx.query, local: "en" };
-  //     // Calling the default core action
-  //     const { data, meta } = await super.find(ctx);
-  //     // some more custom logic
-  //     meta.date = Date.now();
-  //     return { data, meta };
-  //   },
-  //   // Method 3: Replacing a core action
-  //   async findOne(ctx) {
-  //     const { id } = ctx.params;
-  //     const { query } = ctx;
-  //     const entity = await strapi
-  //       .service("api::restaurant.restaurant")
-  //       .findOne(id, query);
-  //     const sanitizedEntity = await this.sanitizeOutput(entity, ctx);
-  //     return this.transformResponse(sanitizedEntity);
-  //   },
+/**
+ * Given a dollar amount number, convert it to it's value in cents
+ * @param number
+ */
+const fromDecimalToInt = (number) => parseInt(number * 100);
+// const fromDecimalToInt = (number) => parseFloat(number.toFixed(2) * 100);
 
+module.exports = createCoreController("api::order.order", ({ strapi }) => ({
   /**
    * Create an order and sets up the stripe checkout session for the frontend
    * @param {any} ctx
    * @returns
    */
+
   async create(ctx) {
-    // const response = await super.create(ctx);
-    console.log(ctx.request);
-    const { products } = ctx.request.body;
-    if (!products) {
-      return ctx.throw(400, "Please specify products");
+    const SERVER_URL = process.env.STRAPI_SERVER_URL || "http://localhost:1337";
+    const BASE_URL = ctx.request.headers.origin || "http://localhost:3000";
+    const {
+      products: productIds,
+      user: userId,
+      quantityWithProductIds,
+    } = ctx.request.body.data;
+
+    // console.log(ctx.request.body.data);
+
+    // https://docs.strapi.io/developer-docs/latest/developer-resources/database-apis-reference/query-engine-api.html
+    const user = await strapi.db
+      .query("plugin::users-permissions.user")
+      .findOne({
+        where: { id: userId },
+        populate: {
+          shippingAddress: true,
+          billingAddress: true,
+        },
+      });
+
+    const getQuantityAgainstEveryProduct = (id) => {
+      return quantityWithProductIds.find((product) => product.id === id).qty;
+    };
+
+    let products = await strapi.db.query("api::product.product").findMany({
+      select: ["*"],
+      where: {
+        id: {
+          $in: productIds,
+        },
+      },
+      populate: { image: true },
+      orderBy: { publishedAt: "DESC" },
+    });
+
+    let lineItems = [];
+    if (products?.length > 0) {
+      products.forEach((product) => {
+        lineItems.push({
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: product.title,
+              images: [`${SERVER_URL}${product.image.url}`],
+              description: product.description,
+            },
+            unit_amount: fromDecimalToInt(product.price),
+          },
+          quantity: getQuantityAgainstEveryProduct(product.id),
+        });
+      });
     }
 
-    // const entry = await strapi.entityService.findOne(
-    //   "api::product.product",
-    //   product.id,
-    //   {
-    //     fields: ["title", "description"],
-    //     populate: { category: true },
-    //   }
-    // );
+    // console.log({ lineItems, products });
 
-    // const entries = await strapi.entityService.findMany(
-    //   "api::article.article",
-    //   {
-    //     fields: ["title", "description"],
-    //     filters: { title: "Hello World" },
-    //     sort: { createdAt: "DESC" },
-    //     populate: { category: true },
-    //   }
-    // );
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      customer_email: user.email,
+      mode: "payment",
+      // metadata: {
+      //   user: userId,
+      //   // products: productIds.map(String),
+      //   products: productIds,
+      //   total: 200,
+      // },
+      line_items: lineItems,
+      success_url: `${BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: BASE_URL,
+    });
+
+    let response = await super.create(ctx);
+    const { id: orderId, attributes } = response.data;
+
+    await strapi.entityService.update("api::order.order", orderId, {
+      data: {
+        checkoutSession: session.id,
+      },
+    });
+    response = {
+      data: {
+        id: orderId,
+        attributes: { ...attributes, checkoutSession: session.id },
+      },
+      meta: {},
+    };
+    return response;
   },
 }));
+
+// const session = await stripe.checkout.sessions.create({
+//   payment_method_types: ["card"],
+//   customer_email: user.email,
+//   mode: "payment",
+//   metadata: {
+//     user: user.id,
+//     products: productIds,
+//     total: 200,
+//   },
+//   line_items: [
+//     {
+//       price_data: {
+//         currency: "usd",
+//         product_data: {
+//           name: title,
+//           images: [coverPhoto],
+//           description,
+//         },
+//         unit_amount: fromDecimalToInt(cost), //we need to convert this price into cents
+//       },
+//       quantity: 1,
+//     },
+//   ],
+
+//   success_url: `http://localhost:3000/`,
+//   cancel_url: `http://localhost:3000/`,
+// });
