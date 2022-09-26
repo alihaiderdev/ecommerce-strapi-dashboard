@@ -1,3 +1,4 @@
+// https://www.codegrepper.com/code-examples/javascript/jwt+token+expiration+time+format
 module.exports = ({ env }) => {
   return {
     "users-permissions": {
