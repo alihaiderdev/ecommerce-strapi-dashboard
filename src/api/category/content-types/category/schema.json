@@ -51,6 +51,14 @@
       "relation": "oneToMany",
       "target": "api::brand.brand",
       "mappedBy": "category"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "available": {
+      "type": "boolean",
+      "default": true
     }
   }
 }

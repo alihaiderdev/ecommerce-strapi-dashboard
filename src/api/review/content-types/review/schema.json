@@ -34,6 +34,10 @@
       "relation": "manyToOne",
       "target": "api::product.product",
       "inversedBy": "reviews"
+    },
+    "approved": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

@@ -7,14 +7,6 @@
   },
   "options": {},
   "attributes": {
-    "firstName": {
-      "type": "string",
-      "required": true
-    },
-    "lastName": {
-      "type": "string",
-      "required": true
-    },
     "mobileNumber": {
       "type": "biginteger",
       "required": true
@@ -38,13 +30,6 @@
     "zipCode": {
       "type": "string",
       "required": true
-    },
-    "profile": {
-      "allowedTypes": [
-        "images"
-      ],
-      "type": "media",
-      "multiple": false
     }
   }
 }
