@@ -104,38 +104,11 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
     response = {
       data: {
         id: orderId,
-        attributes: { ...attributes, checkoutSession: session.id },
+        // attributes: { ...attributes, checkoutSession: session.id },
+        attributes: { checkoutSession: session.id },
       },
       meta: {},
     };
     return response;
   },
 }));
-
-// const session = await stripe.checkout.sessions.create({
-//   payment_method_types: ["card"],
-//   customer_email: user.email,
-//   mode: "payment",
-//   metadata: {
-//     user: user.id,
-//     products: productIds,
-//     total: 200,
-//   },
-//   line_items: [
-//     {
-//       price_data: {
-//         currency: "usd",
-//         product_data: {
-//           name: title,
-//           images: [coverPhoto],
-//           description,
-//         },
-//         unit_amount: fromDecimalToInt(cost), //we need to convert this price into cents
-//       },
-//       quantity: 1,
-//     },
-//   ],
-
-//   success_url: `http://localhost:3000/`,
-//   cancel_url: `http://localhost:3000/`,
-// });
