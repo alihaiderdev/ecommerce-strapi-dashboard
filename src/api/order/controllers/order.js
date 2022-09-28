@@ -92,8 +92,8 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       //   total: 200,
       // },
       line_items: lineItems,
-      success_url: `${BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: BASE_URL,
+      success_url: `${BASE_URL}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${BASE_URL}/order/fail`,
     });
 
     let response = await super.create(ctx);
