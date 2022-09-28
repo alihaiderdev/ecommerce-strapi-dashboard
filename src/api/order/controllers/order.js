@@ -44,7 +44,8 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       });
 
     const getQuantityAgainstEveryProduct = (id) => {
-      return quantityWithProductIds.find((product) => product.id === id).qty;
+      return quantityWithProductIds.find((product) => product.id === id)
+        ?.quantity;
     };
 
     let products = await strapi.db.query("api::product.product").findMany({
@@ -66,7 +67,9 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
             currency: "usd",
             product_data: {
               name: product.title,
-              images: [`${SERVER_URL}${product.image.url}`],
+              images: product?.image
+                ? [`${SERVER_URL}${product?.image?.url}`]
+                : [],
               description: product.description,
             },
             unit_amount: fromDecimalToInt(product.price),
@@ -105,7 +108,8 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       data: {
         id: orderId,
         // attributes: { ...attributes, checkoutSession: session.id },
-        attributes: { checkoutSession: session.id },
+        // attributes: { checkoutSession: session.id },
+        checkoutSession: session.id,
       },
       meta: {},
     };
