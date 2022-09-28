@@ -1,5 +1,6 @@
 const { createCoreController } = require("@strapi/strapi").factories;
 
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 module.exports = createCoreController("api::order.order", ({ strapi }) => ({
   /**
    * Create custom confirm order given checkout session, verifies payment and update the order
@@ -7,27 +8,37 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
    * @returns
    */
   async confirm(ctx) {
-    const { checkout_session } = ctx.request.body;
-    console.log("checkout_session", checkout_session);
+    const { checkout_session } = ctx.request.body?.data;
     const session = await stripe.checkout.sessions.retrieve(checkout_session);
-    console.log("verify session", session);
 
     if (session.payment_status === "paid") {
-      await strapi.entityService.update("api::order.order", checkout_session, {
+      const updatedOrder = await strapi.db.query("api::order.order").update({
+        where: { session_id: checkout_session },
         data: {
           status: "paid",
         },
       });
-      const newOrder = await strapi.services.order.update(
-        {
-          checkout_session,
-        },
-        {
-          status: "paid",
-        }
-      );
 
-      return newOrder;
+      updatedOrder?.quantityWithProductIds.forEach(async (product) => {
+        const quantityInStock = await strapi.entityService.findOne(
+          "api::product.product",
+          product?.id,
+          {
+            fields: ["quantity"],
+          }
+        );
+
+        const remainingQuantity = quantityInStock.quantity - product?.quantity;
+
+        await strapi.entityService.update("api::product.product", product?.id, {
+          data: {
+            quantity: remainingQuantity,
+            available: remainingQuantity == 0 ? false : true,
+          },
+        });
+      });
+
+      return updatedOrder;
     } else {
       ctx.throw(
         400,

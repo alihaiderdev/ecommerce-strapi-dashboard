@@ -3,8 +3,8 @@
 module.exports = {
   routes: [
     {
-      method: "PUT",
-      path: "/order/confirm",
+      method: "POST",
+      path: "/orders/confirm",
       handler: "custom.confirm",
     },
   ],

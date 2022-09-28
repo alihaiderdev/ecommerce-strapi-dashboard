@@ -35,7 +35,7 @@
         "unpaid"
       ]
     },
-    "checkoutSession": {
+    "session_id": {
       "type": "string"
     },
     "quantityWithProductIds": {

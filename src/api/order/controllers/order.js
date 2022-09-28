@@ -30,17 +30,11 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       quantityWithProductIds,
     } = ctx.request.body.data;
 
-    // console.log(ctx.request.body.data);
-
     // https://docs.strapi.io/developer-docs/latest/developer-resources/database-apis-reference/query-engine-api.html
     const user = await strapi.db
       .query("plugin::users-permissions.user")
       .findOne({
         where: { id: userId },
-        populate: {
-          shippingAddress: true,
-          billingAddress: true,
-        },
       });
 
     const getQuantityAgainstEveryProduct = (id) => {
@@ -56,7 +50,6 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
         },
       },
       populate: { image: true },
-      orderBy: { publishedAt: "DESC" },
     });
 
     let lineItems = [];
@@ -101,17 +94,20 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
 
     await strapi.entityService.update("api::order.order", orderId, {
       data: {
-        checkoutSession: session.id,
+        session_id: session.id,
       },
     });
+    // response = {
+    //   data: {
+    //     id: orderId,
+    //     // attributes: { ...attributes, session_id: session.id },
+    //     session_id: session.id,
+    //   },
+    //   meta: {},
+    // };
     response = {
-      data: {
-        id: orderId,
-        // attributes: { ...attributes, checkoutSession: session.id },
-        // attributes: { checkoutSession: session.id },
-        checkoutSession: session.id,
-      },
-      meta: {},
+      id: orderId,
+      session_id: session.id,
     };
     return response;
   },
