@@ -41,6 +41,12 @@
     "quantityWithProductIds": {
       "type": "json",
       "required": true
+    },
+    "address": {
+      "type": "component",
+      "repeatable": false,
+      "component": "address.address",
+      "required": true
     }
   }
 }
