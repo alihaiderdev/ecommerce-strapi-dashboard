@@ -27,8 +27,11 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
             fields: ["quantity"],
           }
         );
+        let remainingQuantity;
 
-        const remainingQuantity = quantityInStock.quantity - product?.quantity;
+        if (quantityInStock.quantity > 0) {
+          remainingQuantity = quantityInStock.quantity - product?.quantity;
+        }
 
         await strapi.entityService.update("api::product.product", product?.id, {
           data: {
@@ -39,11 +42,6 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       });
 
       return updatedOrder;
-    } else {
-      ctx.throw(
-        400,
-        "It seems like the order wasn't verified, please contact support"
-      );
     }
   },
 }));
