@@ -63,12 +63,6 @@
       "inversedBy": "users",
       "configurable": false
     },
-    "review": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::review.review",
-      "mappedBy": "user"
-    },
     "products": {
       "type": "relation",
       "relation": "oneToMany",
@@ -116,6 +110,12 @@
       "allowedTypes": [
         "images"
       ]
+    },
+    "review": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::review.review",
+      "inversedBy": "user"
     }
   }
 }

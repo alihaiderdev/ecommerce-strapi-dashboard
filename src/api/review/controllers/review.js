@@ -48,7 +48,7 @@ module.exports = createCoreController("api::review.review", ({ strapi }) => ({
   },
 
   /**
-   * Delete endpoint should match this syntax (http://localhost:1337/api/reviews/26?prodcutId=405)
+   * Delete endpoint should match this syntax (http://localhost:1337/api/reviews/26?productId=405)
    * @param {any} ctx
    * @returns
    */
