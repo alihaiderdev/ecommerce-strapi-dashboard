@@ -47,6 +47,14 @@ module.exports = createCoreController("api::review.review", ({ strapi }) => ({
     return response;
   },
 
+  async find(ctx) {
+    const { data, meta } = await super.find(ctx);
+    return {
+      data: data.filter((review) => review.attributes.user?.data !== null),
+      meta,
+    };
+  },
+
   /**
    * Delete endpoint should match this syntax (http://localhost:1337/api/reviews/26?productId=405)
    * @param {any} ctx
